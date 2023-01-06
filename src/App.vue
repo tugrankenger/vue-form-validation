@@ -45,6 +45,19 @@
             </div>
           </div>
           <div class="form-group mb-3">
+            <label>Age</label>
+            <input 
+            @blur="v$.$validate()"
+            class="form-control"
+            :class="{'is-invalid': v$.age.$error}"
+            type="text"
+            placeholder="Enter your age"
+            >
+            <div class="input-errors" v-for="error of v$.age.$errors" :key="error.$uid">
+              <div class="error-msg text-danger">{{ error.$message }}</div>
+            </div>
+          </div>
+          <div class="form-group mb-3">
             <label> Select you want to register category </label>
             <select v-model="selectedCategory" class="form-control">
               <option v-for="category in categories" :value="category">{{ category }}</option>
@@ -63,14 +76,14 @@
         </form>
       </div>
       <div class="card p-4 my-3 shadow" style="width:400px">
-        <p>{{ v$.repassword }}</p>
+        <p>{{ v$.age }}</p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import {required, email, minLength, maxLength, sameAs} from '@vuelidate/validators'
+import {required, email, minLength, maxLength, sameAs, between, numeric} from '@vuelidate/validators'
 import { useVuelidate } from '@vuelidate/core'
 export default {
   data() {
@@ -80,6 +93,7 @@ export default {
       password: null,
       repassword: null,
       selectedCategory: null,
+      age: null,
       categories: ["Software", "Hardware", "Cloud", "Servers", "Unix", "Linux", "Windows"],
       hobbies: []
     }
@@ -118,6 +132,11 @@ export default {
         minLength: minLength(6),
         maxLength: maxLength(8),
         sameAs: sameAs('password')
+      },
+      age:{
+        required,
+        numeric,
+        between: between(18,99)
       }
     }
   },
