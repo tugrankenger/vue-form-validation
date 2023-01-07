@@ -59,15 +59,20 @@
           </div>
           <div class="form-group mb-3">
             <label> Select you want to register category </label>
-            <select v-model="selectedCategory" class="form-control">
+            <select v-model="v$.selectedCategory.$model" class="form-control">
               <option v-for="category in categories" :value="category">{{ category }}</option>
             </select>
+            <small v-if="v$.selectedCategory.checked.$invalid" class="text-danger">You can choose only software</small>
           </div>
           <a @click="newHobby" class="text-white btn btn-primary rounded-0 btn-sm">Add Hobby</a>
-
+          <small v-if="v$.hobbies.required.$invalid" class="text-danger">This section is required</small>
           <ul class="list-group my-3 border-0">
             <li class="list-group-item d-flex ps-2" v-for="(hobby, index) in hobbies">
-              <input type="text" class="form-control me-2" v-model="hobby.value">
+              <input 
+              @blur="v$.hobbies.$each[index].value.$touch()"
+              type="text" 
+              class="form-control me-2" 
+              v-model="hobby.value">
               <button class="btn btn-sm btn-danger rounded-0" @click="hobbies.splice(index, 1)">Remove</button>
             </li>
           </ul>
@@ -76,7 +81,7 @@
         </form>
       </div>
       <div class="card p-4 my-3 shadow" style="width:400px">
-        <p>{{ v$.age }}</p>
+        <p>{{ v$.hobbies }}</p>
       </div>
     </div>
   </div>
@@ -92,7 +97,7 @@ export default {
       email: null,
       password: null,
       repassword: null,
-      selectedCategory: null,
+      selectedCategory: 'Software',
       age: null,
       categories: ["Software", "Hardware", "Cloud", "Servers", "Unix", "Linux", "Windows"],
       hobbies: []
@@ -137,6 +142,21 @@ export default {
         required,
         numeric,
         between: between(18,99)
+      },
+      selectedCategory:{
+        checked(val, vm){
+          return vm.selectedCategory === "Software" ? true : false
+        }
+      },
+      hobbies:{
+        required,
+        minLength: minLength(2),
+        $each:{
+          value:{
+            required,
+            minLength:minLength(6)
+          }
+        }
       }
     }
   },
