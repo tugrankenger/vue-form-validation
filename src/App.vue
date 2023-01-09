@@ -47,7 +47,7 @@
           <div class="form-group mb-3">
             <label>Age</label>
             <input 
-            @blur="v$.$validate()"
+            @input="v$.$validate()"
             class="form-control"
             :class="{'is-invalid': v$.age.$error}"
             type="text"
@@ -77,11 +77,11 @@
             </li>
           </ul>
 
-          <button class="btn btn-outline-success rounded-0">Save</button>
+          <button class="btn btn-outline-success rounded-0" :disabled="v$.$invalid">Save</button>
         </form>
       </div>
       <div class="card p-4 my-3 shadow" style="width:400px">
-        <p>{{ v$.hobbies }}</p>
+        <p>{{ v$.age }}</p>
       </div>
     </div>
   </div>
@@ -125,7 +125,18 @@ export default {
     return{
       email:{
         required,
-        email
+        email,
+        uniq : value =>{
+          return value !== 'turankenger@hotmail.com.tr'
+        }
+
+        // uniq: value =>{
+        //   return new Promise((resolve,reject)=>{
+        //     setTimeout(()=>{
+        //       resolve( value !== 'turankenger@hotmail.com.tr')
+        //     },1000)
+        //   })
+        // }
       },
       password:{
         required,
@@ -136,10 +147,9 @@ export default {
         required,
         minLength: minLength(6),
         maxLength: maxLength(8),
-        sameAs: sameAs('password')
+        // sameAs: sameAs('password')
       },
       age:{
-        required,
         numeric,
         between: between(18,99)
       },
